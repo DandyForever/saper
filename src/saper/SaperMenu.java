@@ -33,9 +33,8 @@ public class SaperMenu extends Application {
     private SubMenu mainMenu = new SubMenu(this.newGame, this.settings, this.exit);
 
     private MenuItem sound = new MenuItem("SOUND");
-    private MenuItem keys = new MenuItem("CONTROLS");
     private MenuItem buttonSettingsBack = new MenuItem("BACK");
-    private SubMenu optionsMenu = new SubMenu(this.sound, this.keys, this.buttonSettingsBack);
+    private SubMenu optionsMenu = new SubMenu(this.sound, this.buttonSettingsBack);
 
     private MenuItem newGameEasy = new MenuItem("EASY");
     private MenuItem newGameMedium = new MenuItem("MEDIUM");
@@ -44,7 +43,12 @@ public class SaperMenu extends Application {
     private SubMenu newGameMenu = new SubMenu(this.newGameEasy, this.newGameMedium,
             this.newGameHard, this.newGameButtonBack);
 
+    private MediaPlayer song;
+
     private MenuBox menuBox = new MenuBox(mainMenu);
+    private boolean songIsPlaying;
+
+    private static Minesweeper thread = new Minesweeper();
 
     private void addPicture()
     {
@@ -57,58 +61,84 @@ public class SaperMenu extends Application {
     }
 
     private void setButtonClicks(){
-        this.newGame.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.newGameMenu));
-        this.settings.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.optionsMenu));
+        this.newGame.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.newGameMenu); playClick();});
+        this.settings.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.optionsMenu); playClick();});
         this.exit.setOnMouseClicked(event -> System.exit(0));
 
-        this.buttonSettingsBack.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.mainMenu));
+        this.buttonSettingsBack.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.mainMenu); playClick();});
+        this.sound.setOnMouseClicked(event -> {
+            if (this.songIsPlaying)
+            {
+                this.song.pause();
+                playClick();
+                this.songIsPlaying = false;
+            }
 
-        this.newGameButtonBack.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.mainMenu));
-
-        this.newGameEasy.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed easy level\n");
+            else {
+                playClick();
+                this.songIsPlaying = true;
+                this.song.play();
+            }
         });
 
-        this.newGameMedium.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed medium level\n");
-        });
-
-        this.newGameHard.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed hard level\n");
-        });
+        this.newGameButtonBack.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.mainMenu); playClick();});
 
 
-        Minesweeper thread = new Minesweeper();
+
         this.newGameEasy.setOnMouseClicked(event -> {
-            thread.setBOMBS(12);
-            thread.setCOLS(10);
-            thread.setRAWS(10);
-            thread.setHEIGHT(300);
-            thread.setWIDTH(300);
+            playClick();
+            Minesweeper.setBOMBS(12);
+            Minesweeper.setCOLS(10);
+            Minesweeper.setRAWS(10);
+            Minesweeper.setHEIGHT(300);
+            Minesweeper.setWIDTH(300);
             thread.run();});
 
         this.newGameMedium.setOnMouseClicked(event -> {
-            thread.setBOMBS(30);
-            thread.setCOLS(15);
-            thread.setRAWS(15);
-            thread.setHEIGHT(450);
-            thread.setWIDTH(450);
+            playClick();
+            Minesweeper.setBOMBS(30);
+            Minesweeper.setCOLS(15);
+            Minesweeper.setRAWS(15);
+            Minesweeper.setHEIGHT(450);
+            Minesweeper.setWIDTH(450);
             thread.run();});
 
         this.newGameHard.setOnMouseClicked(event -> {
-            thread.setBOMBS(50);
-            thread.setCOLS(20);
-            thread.setRAWS(20);
-            thread.setHEIGHT(600);
-            thread.setWIDTH(600);
+            playClick();
+            Minesweeper.setBOMBS(50);
+            Minesweeper.setCOLS(20);
+            Minesweeper.setRAWS(20);
+            Minesweeper.setHEIGHT(600);
+            Minesweeper.setWIDTH(600);
             thread.run();
         });
+
 
         root.getChildren().addAll(this.menuBox);
     }
 
+    private void playMusic(){
+        String musicfile = "mlad.mp3";
+        Media sound = new Media(new File(musicfile).toURI().toString());
+        this.song = new MediaPlayer(sound);
+        this.songIsPlaying = true;
+        this.song.play();
+    }
+
+    private void playClick()
+    {
+        String musicfile = "click.mp3";
+        Media sound = new Media(new File(musicfile).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+    }
 
     @Override
     public void start(final Stage primaryStage) {
         addPicture();
         setButtonClicks();
+        playMusic();
+
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         scene.setOnKeyPressed(event -> {
@@ -120,12 +150,14 @@ public class SaperMenu extends Application {
                     fadeTransition.setToValue(0);
                     fadeTransition.setOnFinished(event1 -> this.menuBox.setVisible(false));
                     fadeTransition.play();
+                    playClick();
                 }
 
                 else{
                     fadeTransition.setFromValue(0);
                     fadeTransition.setToValue(1);
                     fadeTransition.play();
+                    playClick();
                     this.menuBox.setVisible(true);
                 }
             }
