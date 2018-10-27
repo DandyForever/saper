@@ -10,11 +10,14 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import javafx.scene.text.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class FXCell extends StackPane{
+public class FXCell extends StackPane {
+
+    private static boolean gameOver = false;
 
     private final int SIZE = 30;
     private int WIDTH;
@@ -27,7 +30,11 @@ public class FXCell extends StackPane{
     private static final int FLAG = 10;
     private static final int OPEN = 11;
 
+    private FXCell status;
+
     private static int numOfOpen = 0;
+
+    private boolean isBeen = false;
 
     private int x;
     private int y;
@@ -36,23 +43,23 @@ public class FXCell extends StackPane{
     private int mode;
     private int neighbours;
     Text text;
-    List <FXCell> around = new ArrayList<>();
+    List<FXCell> around = new ArrayList<>();
 
-    EventHandler mouseEvent = new EventHandler <MouseEvent>() {
+    EventHandler mouseEvent = new EventHandler<MouseEvent>() {
 
         @Override
-        public void handle (MouseEvent event){
+        public void handle(MouseEvent event) {
             MouseButton button = event.getButton();
 
-            if (button == MouseButton.PRIMARY){
+            if (button == MouseButton.PRIMARY) {
                 openCell();
             }
 
-            if (button == MouseButton.SECONDARY){
+            if (button == MouseButton.SECONDARY) {
                 if (getMode() == OPEN)
                     return;
 
-                if (getMode() == FLAG){
+                if (getMode() == FLAG) {
                     setMode(neighbours);
                     System.out.println(neighbours);
                     cell.setFill(Color.GRAY);
@@ -64,8 +71,14 @@ public class FXCell extends StackPane{
                 cell.setFill(new ImagePattern(image));
             }
 
-            if (numOfOpen == RAWS * COLS - BOMBS)
-                System.exit (0);
+            if (numOfOpen == RAWS * COLS - BOMBS) {
+                status.text.setText("Game over! YOU WIN");
+                status.text.setFill(Color.GREEN);
+                gameOver = true;
+                for (FXCell cell : around)
+                    if (cell.getMode() != OPEN)
+                        cell.openCell();
+            }
         }
     };
 
@@ -89,11 +102,32 @@ public class FXCell extends StackPane{
         this.BOMBS = BOMBS;
     }
 
-    public void openCell () {
+    public void openCell() {
+        if (gameOver){
+            isBeen = true;
+        }
+
+        if (gameOver && neighbours == BOMB) {
+            Image image = new Image(getClass().getResourceAsStream("images/mine.png"));
+            cell.setFill(new ImagePattern(image));
+            for (FXCell cell : around) {
+                if (!cell.isBeen)
+                    cell.openCell();
+            }
+            return;
+        }
+
+        if (gameOver && getMode() != BOMB) {
+            for (FXCell cell : around)
+                if (!cell.isBeen)
+                    cell.openCell();
+            return;
+        }
+
         if (getMode() == OPEN || getMode() == FLAG)
             return;
 
-        if (getMode() <= 8 && getMode() > 0){
+        if (getMode() <= 8 && getMode() > 0) {
             cell.setFill(Color.LIGHTGRAY);
             text.setVisible(true);
             setMode(OPEN);
@@ -104,8 +138,7 @@ public class FXCell extends StackPane{
             return;
         }
 
-        if (getMode() == 0)
-        {
+        if (getMode() == 0) {
             cell.setFill(Color.LIGHTGRAY);
             setMode(OPEN);
             numOfOpen++;
@@ -115,11 +148,17 @@ public class FXCell extends StackPane{
             return;
         }
 
-        if (getMode() == BOMB)
-        {
+        if (getMode() == BOMB) {
             Image image = new Image(getClass().getResourceAsStream("images/mine.png"));
             cell.setFill(new ImagePattern(image));
-            System.out.println ("GAME OVER! YOU LOSE");
+            status.text.setText("Game over! YOU LOSE");
+            status.text.setFill(Color.RED);
+            gameOver = true;
+            isBeen = true;
+            for (FXCell cell : around) {
+                if (!cell.isBeen)
+                    cell.openCell();
+            }
             //mouseEvent = noneEvent;
             /*try {
                 Thread.sleep(5000);
@@ -129,6 +168,10 @@ public class FXCell extends StackPane{
             System.exit (0);*/
             return;
         }
+    }
+
+    public void setStatus(FXCell status) {
+        this.status = status;
     }
 
     public int getNeighbours() {
