@@ -99,10 +99,7 @@ public class Minesweeper implements Runnable {
                     cells[i][j].setMode(9);
                     cells[i][j].setNeighbours(9);
                 }
-
-                System.out.printf("%d(%d) ", cells[i][j].getMode(), cells[i][j].getNeighbours());
             }
-            System.out.printf("\n");
         }
 
     }
@@ -121,7 +118,12 @@ public class Minesweeper implements Runnable {
         FXCell[][] cells = new FXCell[RAWS][COLS];
 
         FXCell status = new FXCell();
-        status.text = new Text("Play the Game!");
+        if (BOMBS == 12)
+            status.text = new Text("Easy mode. Play the Game!");
+        else if (BOMBS == 30)
+            status.text = new Text("Medium mode. Play the Game!");
+        else if (BOMBS == 50)
+            status.text = new Text("Hard mode. Play the Game!");
         Rectangle field = new Rectangle(WIDTH, SIZE);
         status.setTranslateX(0);
         status.setTranslateY(0);
@@ -129,8 +131,7 @@ public class Minesweeper implements Runnable {
         status.setStatus(status);
         status.getChildren().addAll(field, status.text);
         pane.getChildren().addAll(status);
-
-        int bb = 0;
+;
         for (int i = 0; i < RAWS; i++) {
             for (int j = 0; j < COLS; j++) {
                 FXCell cell = new FXCell();
@@ -158,10 +159,6 @@ public class Minesweeper implements Runnable {
 
                 cells[i][j] = cell;
 
-                if (cells[i][j].isBomb() == 1) {
-                    bb++;
-                }
-
                 cells[i][j].setStatus(status);
 
                 cells[i][j].text = new Text();
@@ -175,8 +172,6 @@ public class Minesweeper implements Runnable {
                 cells[i][j].setOnMouseClicked(cells[i][j].mouseEvent);
             }
         }
-
-        System.out.println(bb);
 
         numbers(cells);
     }

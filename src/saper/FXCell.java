@@ -61,7 +61,6 @@ public class FXCell extends StackPane {
 
                 if (getMode() == FLAG) {
                     setMode(neighbours);
-                    System.out.println(neighbours);
                     cell.setFill(Color.GRAY);
                     return;
                 }
@@ -159,23 +158,12 @@ public class FXCell extends StackPane {
                 if (!cell.isBeen)
                     cell.openCell();
             }
-            //mouseEvent = noneEvent;
-            /*try {
-                Thread.sleep(5000);
-            } catch(InterruptedException e){
-                System.out.println("Sleep failure");
-            }
-            System.exit (0);*/
             return;
         }
     }
 
     public void setStatus(FXCell status) {
         this.status = status;
-    }
-
-    public int getNeighbours() {
-        return neighbours;
     }
 
     public void setNeighbours(int neighbours) {
