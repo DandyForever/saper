@@ -45,8 +45,7 @@ public class SaperMenu extends Application {
     private MenuItem playButtonMedium = new MenuItem("PLAY");
     private MenuItem playButtonHard = new MenuItem("PLAY");
 
-    private void addPicture()
-    {
+    private void addPicture() {
         root = new Pane();
         Image image = new Image(getClass().getResourceAsStream("images/saper.jpg"));
         ImageView img = new ImageView(image);
@@ -55,7 +54,7 @@ public class SaperMenu extends Application {
         root.getChildren().add(img);
     }
 
-    private void setButtonClicks(){
+    private void setButtonClicks() {
         this.newGame.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.newGameMenu));
         this.settings.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.optionsMenu));
         this.exit.setOnMouseClicked(event -> System.exit(0));
@@ -64,15 +63,18 @@ public class SaperMenu extends Application {
 
         this.newGameButtonBack.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.mainMenu));
 
-        this.newGameEasy.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed easy level\n");
+        this.newGameEasy.setOnMouseClicked(event -> {
+            System.out.printf("%s", "You have choosed easy level\n");
             this.menuBox.setPlay(this.playButtonEasy);
         });
 
-        this.newGameMedium.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed medium level\n");
+        this.newGameMedium.setOnMouseClicked(event -> {
+            System.out.printf("%s", "You have choosed medium level\n");
             this.menuBox.setPlay(this.playButtonMedium);
         });
 
-        this.newGameHard.setOnMouseClicked(event -> {System.out.printf("%s", "You have choosed hard level\n");
+        this.newGameHard.setOnMouseClicked(event -> {
+            System.out.printf("%s", "You have choosed hard level\n");
             this.menuBox.setPlay(this.playButtonHard);
         });
 
@@ -82,23 +84,25 @@ public class SaperMenu extends Application {
             thread.setBOMBS(12);
             thread.setCOLS(10);
             thread.setRAWS(10);
-            thread.setHEIGHT(300);
+            thread.setHEIGHT(330);
             thread.setWIDTH(300);
-            thread.run();});
+            thread.run();
+        });
 
         this.playButtonMedium.setOnMouseClicked(event -> {
             thread.setBOMBS(30);
             thread.setCOLS(15);
             thread.setRAWS(15);
-            thread.setHEIGHT(450);
+            thread.setHEIGHT(480);
             thread.setWIDTH(450);
-            thread.run();});
+            thread.run();
+        });
 
         this.playButtonHard.setOnMouseClicked(event -> {
             thread.setBOMBS(50);
             thread.setCOLS(20);
             thread.setRAWS(20);
-            thread.setHEIGHT(600);
+            thread.setHEIGHT(630);
             thread.setWIDTH(600);
             thread.run();
         });
@@ -115,17 +119,14 @@ public class SaperMenu extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE){
+            if (event.getCode() == KeyCode.ESCAPE) {
                 FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), this.menuBox);
-                if (this.menuBox.isVisible())
-                {
+                if (this.menuBox.isVisible()) {
                     fadeTransition.setFromValue(1);
                     fadeTransition.setToValue(0);
                     fadeTransition.setOnFinished(event1 -> this.menuBox.setVisible(false));
                     fadeTransition.play();
-                }
-
-                else{
+                } else {
                     fadeTransition.setFromValue(0);
                     fadeTransition.setToValue(1);
                     fadeTransition.play();
@@ -140,14 +141,14 @@ public class SaperMenu extends Application {
     }
 
 
-    private static class MenuItem extends StackPane{
-        private  MenuItem(String name){
+    private static class MenuItem extends StackPane {
+        private MenuItem(String name) {
             Rectangle backGround = new Rectangle(100, 40, Color.BLACK);
             backGround.setOpacity(0.5);
 
             Text text = new Text(name);
             text.setFill(Color.WHITE);
-            text.setFont(Font.font("Times New Roman", FontWeight.BOLD,15));
+            text.setFont(Font.font("Times New Roman", FontWeight.BOLD, 15));
 
             setAlignment(Pos.CENTER);
             getChildren().addAll(backGround, text);
@@ -167,9 +168,10 @@ public class SaperMenu extends Application {
         }
     }
 
-    private static class MenuBox extends Pane{
+    private static class MenuBox extends Pane {
         static SubMenu subMenu;
-        private MenuBox(SubMenu subMenu){
+
+        private MenuBox(SubMenu subMenu) {
             MenuBox.subMenu = subMenu;
 
             setVisible(false);
@@ -177,14 +179,14 @@ public class SaperMenu extends Application {
             backGround.setOpacity(0.4);
             getChildren().addAll(backGround, subMenu);
         }
-        private void setSubMenu(SubMenu subMenu){
+
+        private void setSubMenu(SubMenu subMenu) {
             getChildren().remove(MenuBox.subMenu);
             MenuBox.subMenu = subMenu;
             getChildren().add(MenuBox.subMenu);
         }
 
-        private void setPlay(MenuItem playButton)
-        {
+        private void setPlay(MenuItem playButton) {
             getChildren().remove(MenuBox.subMenu);
             playButton.setLayoutX(160);
             playButton.setLayoutY(150);
@@ -194,12 +196,12 @@ public class SaperMenu extends Application {
 
     }
 
-    private static class SubMenu extends VBox{
-        private SubMenu(MenuItem...items){
+    private static class SubMenu extends VBox {
+        private SubMenu(MenuItem... items) {
             setSpacing(15);
             setTranslateY(150);
             setTranslateX(160);
-            for(MenuItem item : items){
+            for (MenuItem item : items) {
                 getChildren().addAll(item);
             }
         }

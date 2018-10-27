@@ -37,72 +37,74 @@ public class Minesweeper implements Runnable {
     }
 
 
-    public void numbers (FXCell[][] cell_) {
+    public void numbers(FXCell[][] cell_) {
         FXCell[][] cells = cell_;
 
         for (int i = 0; i < RAWS; i++) {
             for (int j = 0; j < COLS; j++) {
                 int neighbours = 0;
+
+                if (i != 0 && j != 0) {
+                    neighbours = neighbours + cells[i - 1][j].isBomb() + cells[i][j - 1].isBomb() + cells[i - 1][j - 1].isBomb();
+                    cells[i][j].around.add(cells[i - 1][j]);
+                    cells[i][j].around.add(cells[i][j - 1]);
+                    cells[i][j].around.add(cells[i - 1][j - 1]);
+                } else {
+                    if (i != 0) {
+                        neighbours = neighbours + cells[i - 1][j].isBomb();
+                        cells[i][j].around.add(cells[i - 1][j]);
+                    } else if (j != 0) {
+                        neighbours = neighbours + cells[i][j - 1].isBomb();
+                        cells[i][j].around.add(cells[i][j - 1]);
+                    }
+                }
+
+                if (i != RAWS - 1 && j != 0) {
+                    neighbours = neighbours + cells[i + 1][j - 1].isBomb() + cells[i + 1][j].isBomb();
+                    cells[i][j].around.add(cells[i + 1][j - 1]);
+                    cells[i][j].around.add(cells[i + 1][j]);
+                } else {
+                    if (i != RAWS - 1) {
+                        neighbours = neighbours + cells[i + 1][j].isBomb();
+                        cells[i][j].around.add(cells[i + 1][j]);
+                    }
+                }
+
+                if (i != RAWS - 1 && j != COLS - 1) {
+                    neighbours = neighbours + cells[i + 1][j + 1].isBomb() + cells[i][j + 1].isBomb();
+                    cells[i][j].around.add(cells[i + 1][j + 1]);
+                    cells[i][j].around.add(cells[i][j + 1]);
+                } else {
+                    if (j != COLS - 1) {
+                        neighbours = neighbours + cells[i][j + 1].isBomb();
+                        cells[i][j].around.add(cells[i][j + 1]);
+                    }
+                }
+
+                if (i != 0 && j != COLS - 1) {
+                    neighbours = neighbours + cells[i - 1][j + 1].isBomb();
+                    cells[i][j].around.add(cells[i - 1][j + 1]);
+                }
+
+
+
+                cells[i][j].setMode(neighbours);
+
+                cells[i][j].setNeighbours(neighbours);
+
+                cells[i][j].text.setFont(Font.font(18));
+                cells[i][j].text.setText(String.valueOf(neighbours));
+                cells[i][j].text.setVisible(false);
                 if (cells[i][j].isBomb() == 1) {
                     cells[i][j].setMode(9);
                     cells[i][j].setNeighbours(9);
                 }
-                else {
-                    if (i != 0 && j != 0){
-                        neighbours = neighbours + cells[i - 1][j].isBomb() + cells[i][j - 1].isBomb() + cells[i - 1][j - 1].isBomb();
-                        cells[i][j].around.add(cells[i - 1][j]);
-                        cells[i][j].around.add(cells[i][j - 1]);
-                        cells[i][j].around.add(cells[i - 1][j - 1]);
-                    } else {
-                        if (i != 0) {
-                            neighbours = neighbours + cells[i - 1][j].isBomb();
-                            cells[i][j].around.add(cells[i - 1][j]);
-                        }
-                        else if (j != 0) {
-                            neighbours = neighbours + cells[i][j - 1].isBomb();
-                            cells[i][j].around.add(cells[i][j - 1]);
-                        }
-                    }
 
-                    if (i != RAWS - 1 && j != 0) {
-                        neighbours = neighbours + cells[i + 1][j - 1].isBomb() + cells[i + 1][j].isBomb();
-                        cells[i][j].around.add(cells[i + 1][j - 1]);
-                        cells[i][j].around.add(cells[i + 1][j]);
-                    } else {
-                        if (i != RAWS - 1) {
-                            neighbours = neighbours + cells[i + 1][j].isBomb();
-                            cells[i][j].around.add(cells[i + 1][j]);
-                        }
-                    }
-
-                    if (i != RAWS - 1 && j != COLS - 1) {
-                        neighbours = neighbours + cells[i + 1][j + 1].isBomb() + cells[i][j + 1].isBomb();
-                        cells[i][j].around.add(cells[i + 1][j + 1]);
-                        cells[i][j].around.add(cells[i][j + 1]);
-                    } else {
-                        if (j != COLS - 1) {
-                            neighbours = neighbours + cells[i][j + 1].isBomb();
-                            cells[i][j].around.add(cells[i][j + 1]);
-                        }
-                    }
-
-                    if (i != 0 && j != COLS - 1) {
-                        neighbours = neighbours + cells[i - 1][j + 1].isBomb();
-                        cells[i][j].around.add(cells[i - 1][j + 1]);
-                    }
-
-                    cells[i][j].setMode(neighbours);
-
-                    cells[i][j].setNeighbours(neighbours);
-
-                    cells[i][j].text.setFont(Font.font(18));
-                    cells[i][j].text.setText(String.valueOf(neighbours));
-                    cells[i][j].text.setVisible(false);
-                }
-                System.out.printf ("%d(%d) ", cells[i][j].getMode(), cells[i][j].getNeighbours());
+                System.out.printf("%d(%d) ", cells[i][j].getMode(), cells[i][j].getNeighbours());
             }
-            System.out.printf ("\n");
+            System.out.printf("\n");
         }
+
     }
 
     @Override
@@ -117,6 +119,16 @@ public class Minesweeper implements Runnable {
         int bombs = 0;
 
         FXCell[][] cells = new FXCell[RAWS][COLS];
+
+        FXCell status = new FXCell();
+        status.text = new Text("Play the Game!");
+        Rectangle field = new Rectangle(WIDTH, SIZE);
+        status.setTranslateX(0);
+        status.setTranslateY(0);
+        field.setFill(Color.AQUA);
+        status.setStatus(status);
+        status.getChildren().addAll(field, status.text);
+        pane.getChildren().addAll(status);
 
         int bb = 0;
         for (int i = 0; i < RAWS; i++) {
@@ -135,8 +147,7 @@ public class Minesweeper implements Runnable {
                 if (RAWS * COLS - RAWS * i - j == BOMBS - bombs) {
                     cell.setBomb(true);
                     bombs++;
-                } else
-                if (bombs < BOMBS){
+                } else if (bombs < BOMBS) {
                     boolean isBomb = Math.random() < 0.15;
                     if (isBomb) {
                         cell.setBomb(true);
@@ -147,23 +158,23 @@ public class Minesweeper implements Runnable {
 
                 cells[i][j] = cell;
 
-                if (cells[i][j].isBomb() == 1){
+                if (cells[i][j].isBomb() == 1) {
                     bb++;
                 }
 
+                cells[i][j].setStatus(status);
+
                 cells[i][j].text = new Text();
 
-                cells[i][j].cell = new Rectangle( SIZE - 1, SIZE - 1);
+                cells[i][j].cell = new Rectangle(SIZE - 1, SIZE - 1);
                 cells[i][j].cell.setFill(Color.GRAY);
                 cells[i][j].getChildren().addAll(cells[i][j].cell, cells[i][j].text);
                 cells[i][j].setTranslateX(i * SIZE);
-                cells[i][j].setTranslateY(j * SIZE);
+                cells[i][j].setTranslateY(j * SIZE + SIZE);
                 pane.getChildren().addAll(cells[i][j]);
                 cells[i][j].setOnMouseClicked(cells[i][j].mouseEvent);
             }
         }
-
-
 
         System.out.println(bb);
 
