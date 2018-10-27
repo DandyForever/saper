@@ -82,7 +82,7 @@ public class SaperMenu extends Application {
             thread.setBOMBS(12);
             thread.setCOLS(10);
             thread.setRAWS(10);
-            thread.setHEIGHT(300);
+            thread.setHEIGHT(330);
             thread.setWIDTH(300);
             thread.run();});
 
@@ -90,7 +90,7 @@ public class SaperMenu extends Application {
             thread.setBOMBS(30);
             thread.setCOLS(15);
             thread.setRAWS(15);
-            thread.setHEIGHT(450);
+            thread.setHEIGHT(480);
             thread.setWIDTH(450);
             thread.run();});
 
@@ -98,7 +98,7 @@ public class SaperMenu extends Application {
             thread.setBOMBS(50);
             thread.setCOLS(20);
             thread.setRAWS(20);
-            thread.setHEIGHT(600);
+            thread.setHEIGHT(630);
             thread.setWIDTH(600);
             thread.run();
         });
