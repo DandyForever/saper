@@ -171,7 +171,7 @@ public class SaperMenu extends Application {
 
     private static class MenuItem extends StackPane{
         private  MenuItem(String name){
-            Rectangle backGround = new Rectangle(100, 40, Color.BLACK);
+            Rectangle backGround = new Rectangle(140, 40, Color.BLACK);
             backGround.setOpacity(0.5);
 
             Text text = new Text(name);
@@ -217,7 +217,7 @@ public class SaperMenu extends Application {
         private SubMenu(MenuItem...items){
             setSpacing(15);
             setTranslateY(150);
-            setTranslateX(160);
+            setTranslateX(140);
             for(MenuItem item : items){
                 getChildren().addAll(item);
             }
