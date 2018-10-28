@@ -32,7 +32,7 @@ public class SaperMenu extends Application {
     private MenuItem exit = new MenuItem("EXIT");
     private SubMenu mainMenu = new SubMenu(this.newGame, this.settings, this.exit);
 
-    private MenuItem sound = new MenuItem("SOUND");
+    private MenuItem sound = new MenuItem("SOUND OFF|ON");
     private MenuItem buttonSettingsBack = new MenuItem("BACK");
     private SubMenu optionsMenu = new SubMenu(this.sound, this.buttonSettingsBack);
 
