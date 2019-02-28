@@ -10,6 +10,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -17,6 +19,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.File;
 
 
 public class SaperMenu extends Application {
@@ -28,10 +32,9 @@ public class SaperMenu extends Application {
     private MenuItem exit = new MenuItem("EXIT");
     private SubMenu mainMenu = new SubMenu(this.newGame, this.settings, this.exit);
 
-    private MenuItem sound = new MenuItem("SOUND");
-    private MenuItem keys = new MenuItem("CONTROLS");
+    private MenuItem sound = new MenuItem("SOUND OFF|ON");
     private MenuItem buttonSettingsBack = new MenuItem("BACK");
-    private SubMenu optionsMenu = new SubMenu(this.sound, this.keys, this.buttonSettingsBack);
+    private SubMenu optionsMenu = new SubMenu(this.sound, this.buttonSettingsBack);
 
     private MenuItem newGameEasy = new MenuItem("EASY");
     private MenuItem newGameMedium = new MenuItem("MEDIUM");
@@ -40,12 +43,15 @@ public class SaperMenu extends Application {
     private SubMenu newGameMenu = new SubMenu(this.newGameEasy, this.newGameMedium,
             this.newGameHard, this.newGameButtonBack);
 
-    private MenuBox menuBox = new MenuBox(mainMenu);
-    private MenuItem playButtonEasy = new MenuItem("PLAY");
-    private MenuItem playButtonMedium = new MenuItem("PLAY");
-    private MenuItem playButtonHard = new MenuItem("PLAY");
+    private MediaPlayer song;
 
-    private void addPicture() {
+    private MenuBox menuBox = new MenuBox(mainMenu);
+    private boolean songIsPlaying;
+
+    private static Minesweeper thread = new Minesweeper();
+
+    private void addPicture()
+    {
         root = new Pane();
         Image image = new Image(getClass().getResourceAsStream("images/saper.jpg"));
         ImageView img = new ImageView(image);
@@ -54,82 +60,104 @@ public class SaperMenu extends Application {
         root.getChildren().add(img);
     }
 
-    private void setButtonClicks() {
-        this.newGame.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.newGameMenu));
-        this.settings.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.optionsMenu));
+    private void setButtonClicks(){
+        this.newGame.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.newGameMenu); playClick();});
+        this.settings.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.optionsMenu); playClick();});
         this.exit.setOnMouseClicked(event -> System.exit(0));
 
-        this.buttonSettingsBack.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.mainMenu));
+        this.buttonSettingsBack.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.mainMenu); playClick();});
+        this.sound.setOnMouseClicked(event -> {
+            if (this.songIsPlaying)
+            {
+                this.song.pause();
+                playClick();
+                this.songIsPlaying = false;
+            }
 
-        this.newGameButtonBack.setOnMouseClicked(event -> this.menuBox.setSubMenu(this.mainMenu));
+            else {
+                playClick();
+                this.songIsPlaying = true;
+                this.song.play();
+            }
+        });
+
+        this.newGameButtonBack.setOnMouseClicked(event -> {this.menuBox.setSubMenu(this.mainMenu); playClick();});
+
+
 
         this.newGameEasy.setOnMouseClicked(event -> {
-            System.out.printf("%s", "You have choosed easy level\n");
-            this.menuBox.setPlay(this.playButtonEasy);
-        });
+            playClick();
+            Minesweeper.setBOMBS(12);
+            Minesweeper.setCOLS(10);
+            Minesweeper.setRAWS(10);
+            Minesweeper.setHEIGHT(300);
+            Minesweeper.setWIDTH(300);
+            thread.run();});
 
         this.newGameMedium.setOnMouseClicked(event -> {
-            System.out.printf("%s", "You have choosed medium level\n");
-            this.menuBox.setPlay(this.playButtonMedium);
-        });
+            playClick();
+            Minesweeper.setBOMBS(30);
+            Minesweeper.setCOLS(15);
+            Minesweeper.setRAWS(15);
+            Minesweeper.setHEIGHT(450);
+            Minesweeper.setWIDTH(450);
+            thread.run();});
 
         this.newGameHard.setOnMouseClicked(event -> {
-            System.out.printf("%s", "You have choosed hard level\n");
-            this.menuBox.setPlay(this.playButtonHard);
-        });
-
-
-        Minesweeper thread = new Minesweeper();
-        this.playButtonEasy.setOnMouseClicked(event -> {
-            thread.setBOMBS(12);
-            thread.setCOLS(10);
-            thread.setRAWS(10);
-            thread.setHEIGHT(330);
-            thread.setWIDTH(300);
+            playClick();
+            Minesweeper.setBOMBS(50);
+            Minesweeper.setCOLS(20);
+            Minesweeper.setRAWS(20);
+            Minesweeper.setHEIGHT(600);
+            Minesweeper.setWIDTH(600);
             thread.run();
         });
 
-        this.playButtonMedium.setOnMouseClicked(event -> {
-            thread.setBOMBS(30);
-            thread.setCOLS(15);
-            thread.setRAWS(15);
-            thread.setHEIGHT(480);
-            thread.setWIDTH(450);
-            thread.run();
-        });
-
-        this.playButtonHard.setOnMouseClicked(event -> {
-            thread.setBOMBS(50);
-            thread.setCOLS(20);
-            thread.setRAWS(20);
-            thread.setHEIGHT(630);
-            thread.setWIDTH(600);
-            thread.run();
-        });
 
         root.getChildren().addAll(this.menuBox);
     }
 
+    private void playMusic(){
+        String musicfile = "mlad.mp3";
+        Media sound = new Media(new File(musicfile).toURI().toString());
+        this.song = new MediaPlayer(sound);
+        this.songIsPlaying = true;
+        this.song.play();
+    }
+
+    private void playClick()
+    {
+        String musicfile = "click.mp3";
+        Media sound = new Media(new File(musicfile).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+    }
 
     @Override
     public void start(final Stage primaryStage) {
         addPicture();
         setButtonClicks();
+        playMusic();
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE){
                 FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), this.menuBox);
-                if (this.menuBox.isVisible()) {
+                if (this.menuBox.isVisible())
+                {
                     fadeTransition.setFromValue(1);
                     fadeTransition.setToValue(0);
                     fadeTransition.setOnFinished(event1 -> this.menuBox.setVisible(false));
                     fadeTransition.play();
-                } else {
+                    playClick();
+                }
+
+                else{
                     fadeTransition.setFromValue(0);
                     fadeTransition.setToValue(1);
                     fadeTransition.play();
+                    playClick();
                     this.menuBox.setVisible(true);
                 }
             }
@@ -141,14 +169,14 @@ public class SaperMenu extends Application {
     }
 
 
-    private static class MenuItem extends StackPane {
-        private MenuItem(String name) {
-            Rectangle backGround = new Rectangle(100, 40, Color.BLACK);
+    private static class MenuItem extends StackPane{
+        private  MenuItem(String name){
+            Rectangle backGround = new Rectangle(140, 40, Color.BLACK);
             backGround.setOpacity(0.5);
 
             Text text = new Text(name);
             text.setFill(Color.WHITE);
-            text.setFont(Font.font("Times New Roman", FontWeight.BOLD, 15));
+            text.setFont(Font.font("Times New Roman", FontWeight.BOLD,15));
 
             setAlignment(Pos.CENTER);
             getChildren().addAll(backGround, text);
@@ -168,10 +196,9 @@ public class SaperMenu extends Application {
         }
     }
 
-    private static class MenuBox extends Pane {
+    private static class MenuBox extends Pane{
         static SubMenu subMenu;
-
-        private MenuBox(SubMenu subMenu) {
+        private MenuBox(SubMenu subMenu){
             MenuBox.subMenu = subMenu;
 
             setVisible(false);
@@ -179,29 +206,19 @@ public class SaperMenu extends Application {
             backGround.setOpacity(0.4);
             getChildren().addAll(backGround, subMenu);
         }
-
-        private void setSubMenu(SubMenu subMenu) {
+        private void setSubMenu(SubMenu subMenu){
             getChildren().remove(MenuBox.subMenu);
             MenuBox.subMenu = subMenu;
             getChildren().add(MenuBox.subMenu);
         }
-
-        private void setPlay(MenuItem playButton) {
-            getChildren().remove(MenuBox.subMenu);
-            playButton.setLayoutX(160);
-            playButton.setLayoutY(150);
-            playButton.setVisible(true);
-            getChildren().add(playButton);
-        }
-
     }
 
-    private static class SubMenu extends VBox {
-        private SubMenu(MenuItem... items) {
+    private static class SubMenu extends VBox{
+        private SubMenu(MenuItem...items){
             setSpacing(15);
             setTranslateY(150);
-            setTranslateX(160);
-            for (MenuItem item : items) {
+            setTranslateX(140);
+            for(MenuItem item : items){
                 getChildren().addAll(item);
             }
         }
